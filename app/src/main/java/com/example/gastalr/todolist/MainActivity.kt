@@ -12,20 +12,24 @@ import android.view.View
 import kotlin.collections.*
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
-
-
+import android.database.sqlite.SQLiteDatabase
+import com.example.gastalr.todolist.sql.TaskContract
+import android.content.ContentValues
+import android.support.design.widget.FloatingActionButton
+import android.support.v4.app.FragmentActivity
+import android.util.Log
+import android.view.MotionEvent
+import com.example.gastalr.todolist.sql.TaskDbHelper
 
 
 class MainActivity : AppCompatActivity() {
     private var recyclerView: RecyclerView? = null
-
-    private val cities: MutableList<MyObject> = mutableListOf()
+    private var mHelper: TaskDbHelper = TaskDbHelper(this)
+    private val TAG: String = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //remplir la ville
 
         recyclerView = this.findViewById(R.id.recyclerView)
 
@@ -38,7 +42,9 @@ class MainActivity : AppCompatActivity() {
         //puis créer un MyAdapter, lui fournir notre liste de villes.
         //cet adapter servira à remplir notre recyclerview
 
-        val adapter = MyAdapter()
+      //  this.deleteDatabase("com.gastalr.todolist.db");
+
+        val adapter = MyAdapter(mHelper)
 
 
         val swipeAndDragHelper = SwipeAndDragHelper(adapter)
@@ -48,18 +54,26 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView!!.adapter = adapter
 
-        touchHelper.attachToRecyclerView(recyclerView);
+        touchHelper.attachToRecyclerView(recyclerView)
 
-        ajouterVilles()
-        adapter.setList(cities)
+        //adapter.setList(cities)
+        val db = mHelper.writableDatabase
+      //  db.execSQL("DROP TABLE "+TaskContract.TaskEntry.TABLE)
+        //db.delete(TaskContract.TaskEntry.TABLE, null, null)
+        val floatingButton: FloatingActionButton = this.findViewById(R.id.floating_button)
+
+        floatingButton.setOnClickListener {
+            adapter.addTask()
+        }
+
+        val cursor = db.query(TaskContract.TaskEntry.TABLE,
+                arrayOf(TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE), null, null, null, null, null)
+        while (cursor.moveToNext()) {
+            val idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)
+            Log.d(TAG, "Task: " + cursor.getString(idx))
+        }
+        cursor.close()
+        db.close()
     }
 
-    private fun ajouterVilles() {
-        cities.add(MyObject("France", "http://www.telegraph.co.uk/travel/destination/article130148.ece/ALTERNATES/w620/parisguidetower.jpg"))
-        cities.add(MyObject("Angleterre", "http://www.traditours.com/images/Photos%20Angleterre/ForumLondonBridge.jpg"))
-        cities.add(MyObject("Allemagne", "http://tanned-allemagne.com/wp-content/uploads/2012/10/pano_rathaus_1280.jpg"))
-        cities.add(MyObject("Espagne", "http://www.sejour-linguistique-lec.fr/wp-content/uploads/espagne-02.jpg"))
-        cities.add(MyObject("Italie", "http://retouralinnocence.com/wp-content/uploads/2013/05/Hotel-en-Italie-pour-les-Vacances2.jpg"))
-        cities.add(MyObject("Russie", "http://www.choisir-ma-destination.com/uploads/_large_russie-moscou2.jpg"))
-    }
 }

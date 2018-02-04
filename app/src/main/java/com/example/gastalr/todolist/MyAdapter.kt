@@ -5,23 +5,31 @@ package com.example.gastalr.todolist
  */
 
 import android.annotation.SuppressLint
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import android.support.v7.widget.RecyclerView
-import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
-import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.ViewGroup
+import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
+import com.example.gastalr.todolist.sql.TaskContract
+import com.example.gastalr.todolist.sql.TaskDbHelper
 
 
-
-class MyAdapter :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.ActionCompletionContract {
+class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.ActionCompletionContract {
 
     private var touchHelper: ItemTouchHelper? = null
     private var list = mutableListOf<MyObject>()
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+        println("Attached")
+        initList()
+        super.onAttachedToRecyclerView(recyclerView)
+    }
     override fun onCreateViewHolder(viewGroup: ViewGroup, itemType: Int): MyViewHolder {
-        println("Create\n")
+        println("Create")
         val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.cell_cards, viewGroup, false)
         return MyViewHolder(view)
     }
@@ -31,13 +39,31 @@ class MyAdapter :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.Act
         val myObject = list[position]
         println("Bind")
         myViewHolder.bind(myObject)
-        myViewHolder.imageView.setOnTouchListener(OnTouchListener { _, event ->
+        myViewHolder.titleView.setOnTouchListener({ _, event ->
             if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                 println("Touch")
                 touchHelper!!.startDrag(myViewHolder)
             }
             false
         })
+    }
+
+    private fun initList() {
+        list.clear()
+        val db = mHelper.readableDatabase
+        val cursor = db.query(TaskContract.TaskEntry.TABLE,
+                arrayOf(TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_TEXT), null, null, null, null, null)
+        while (cursor.moveToNext()) {
+            val id = cursor.getColumnIndex(TaskContract.TaskEntry._ID)
+            val idTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)
+            val idText = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TEXT)
+            println("ADD TO LIST " + cursor.getString(idTitle) + " " + cursor.getString(idText))
+            list.add(MyObject(cursor.getString(id), cursor.getString(idTitle), cursor.getString(idText)))
+        }
+        notifyDataSetChanged()
+
+        cursor.close()
+        db.close()
     }
 
     override fun getItemCount(): Int {
@@ -53,6 +79,7 @@ class MyAdapter :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.Act
     }
 
     override fun onViewSwiped(position: Int) {
+        mHelper.deleteTask(list[position]._ID)
         list.removeAt(position)
         notifyItemRemoved(position)
     }
@@ -63,5 +90,25 @@ class MyAdapter :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.Act
 
     fun setList(list : List<MyObject>) {
         this.list = list as MutableList<MyObject>
+    }
+
+
+    fun addTask() {
+        val title = "test"
+        val task = "Oui bonsoir famille"
+        val db = mHelper.readableDatabase
+        val values = ContentValues()
+
+        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, title)
+        values.put(TaskContract.TaskEntry.COL_TASK_TEXT, task)
+
+        val id = db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                null,
+                values,
+                SQLiteDatabase.CONFLICT_REPLACE)
+        db.close()
+
+        list.add(MyObject(id.toString(), title, task))
+        notifyItemInserted(list.size)
     }
 }
