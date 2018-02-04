@@ -4,22 +4,19 @@ package com.example.gastalr.todolist
  * Created by gastal_r on 2/3/18.
  */
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.View
-import kotlin.collections.*
 import android.support.v7.widget.helper.ItemTouchHelper
-import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
-import android.database.sqlite.SQLiteDatabase
-import com.example.gastalr.todolist.sql.TaskContract
-import android.content.ContentValues
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.FragmentActivity
 import android.util.Log
-import android.view.MotionEvent
+import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
+import com.example.gastalr.todolist.sql.TaskContract
 import com.example.gastalr.todolist.sql.TaskDbHelper
+import android.content.Intent
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity() {
@@ -63,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val floatingButton: FloatingActionButton = this.findViewById(R.id.floating_button)
 
         floatingButton.setOnClickListener {
-            adapter.addTask()
+            adapter.addTask(this)
         }
 
         val cursor = db.query(TaskContract.TaskEntry.TABLE,
@@ -76,4 +73,17 @@ class MainActivity : AppCompatActivity() {
         db.close()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        // Check which request we're responding to
+        if (requestCode == 42) {
+            // Make sure the request was successful
+            if (resultCode == Activity.RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+
+                // Do something with the contact here (bigger example below)
+                Toast.makeText(this, data.getStringExtra("Result"), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }

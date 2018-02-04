@@ -5,8 +5,11 @@ package com.example.gastalr.todolist
  */
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
@@ -14,6 +17,7 @@ import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
+import com.example.gastalr.todolist.extensions.launchActivity
 import com.example.gastalr.todolist.sql.TaskContract
 import com.example.gastalr.todolist.sql.TaskDbHelper
 
@@ -88,12 +92,15 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
         this.touchHelper = touchHelper
     }
 
-    fun setList(list : List<MyObject>) {
-        this.list = list as MutableList<MyObject>
-    }
 
+    fun addTask(context: Context) {
+        val test: Activity = context as Activity
 
-    fun addTask() {
+        test.launchActivity<AddNoteActivity>(42) {
+            putExtra("user", "854")
+            putExtra("user2", "46850")
+        }
+        /*
         val title = "test"
         val task = "Oui bonsoir famille"
         val db = mHelper.readableDatabase
@@ -110,5 +117,6 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
 
         list.add(MyObject(id.toString(), title, task))
         notifyItemInserted(list.size)
+        */
     }
 }

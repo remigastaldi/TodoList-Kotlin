@@ -14,13 +14,10 @@ class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val titleView: TextView = itemView.findViewById<View>(R.id.title) as TextView
     val textView: TextView = itemView.findViewById<View>(R.id.text) as TextView
-//    val imageView: ImageView = itemView.findViewById<View>(R.id.image) as ImageView
-
 
     fun bind(myObject: MyObject) {
         titleView.text = myObject.title
         textView.text = myObject.text
-  //      Picasso.with(imageView.context).load(myObject.imageUrl).centerCrop().fit().into(imageView)
     }
 
 }
