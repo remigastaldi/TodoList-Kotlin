@@ -31,16 +31,12 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = this.findViewById(R.id.recyclerView)
 
-        //définit l'agencement des cellules, ici de façon verticale, comme une ListView
         recyclerView!!.layoutManager = LinearLayoutManager(this)
 
-        //pour adapter en grille comme une RecyclerView, avec 2 cellules par ligne
         //recyclerView.setLayoutManager(new GridLayoutManager(this,2));
 
-        //puis créer un MyAdapter, lui fournir notre liste de villes.
-        //cet adapter servira à remplir notre recyclerview
 
-      //  this.deleteDatabase("com.gastalr.todolist.db");
+       // this.deleteDatabase("com.gastalr.todolist.db");
 
 
 
@@ -53,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
         touchHelper.attachToRecyclerView(recyclerView)
 
-        //adapter.setList(cities)
         val db = mHelper.writableDatabase
       //  db.execSQL("DROP TABLE "+TaskContract.TaskEntry.TABLE)
         //db.delete(TaskContract.TaskEntry.TABLE, null, null)
@@ -77,19 +72,15 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 42) {
             if (resultCode == Activity.RESULT_OK) {
                 val action = data.getStringExtra("Action")
-                println("========= " + action)
 
                 when (action)
                 {
                     "ADD" -> {
                         val taskTitle = data.getStringExtra("TaskTitle")
                         val taskText = data.getStringExtra("TaskText")
-                        println("========= " + taskTitle)
-                        println("========= " + taskText)
                         adapter.addTask(taskTitle, taskText)
                     }
                 }
-                //Toast.makeText(this, data.getStringExtra("Result"), Toast.LENGTH_SHORT).show()
             }
         }
     }

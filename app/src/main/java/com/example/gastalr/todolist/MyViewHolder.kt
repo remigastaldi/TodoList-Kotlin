@@ -14,10 +14,12 @@ class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val titleView: TextView = itemView.findViewById<View>(R.id.title) as TextView
     val textView: TextView = itemView.findViewById<View>(R.id.text) as TextView
+    val dateTextView: TextView = itemView.findViewById<View>(R.id.date) as TextView
 
     fun bind(myObject: MyObject) {
         titleView.text = myObject.title
         textView.text = myObject.text
+        dateTextView.text = myObject.date
     }
 
 }

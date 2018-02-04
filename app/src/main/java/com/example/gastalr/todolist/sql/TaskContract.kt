@@ -17,6 +17,7 @@ class TaskContract {
             val TABLE: String = "tasks"
             val COL_TASK_TITLE: String = "title"
             val COL_TASK_TEXT: String = "text"
+            val COL_TASK_DATE: String = "date"
 
             var _ID: String = "id"
         }

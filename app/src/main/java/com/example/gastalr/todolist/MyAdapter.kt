@@ -20,6 +20,9 @@ import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
 import com.example.gastalr.todolist.extensions.launchActivity
 import com.example.gastalr.todolist.sql.TaskContract
 import com.example.gastalr.todolist.sql.TaskDbHelper
+import java.text.DateFormat.getDateInstance
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.ActionCompletionContract {
@@ -56,13 +59,18 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
         list.clear()
         val db = mHelper.readableDatabase
         val cursor = db.query(TaskContract.TaskEntry.TABLE,
-                arrayOf(TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_TEXT), null, null, null, null, null)
+                arrayOf(TaskContract.TaskEntry._ID,
+                        TaskContract.TaskEntry.COL_TASK_TITLE,
+                        TaskContract.TaskEntry.COL_TASK_TEXT,
+                        TaskContract.TaskEntry.COL_TASK_DATE),null, null, null, null, null)
         while (cursor.moveToNext()) {
             val id = cursor.getColumnIndex(TaskContract.TaskEntry._ID)
             val idTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)
             val idText = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TEXT)
+            val idDate = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DATE)
+
             println("ADD TO LIST " + cursor.getString(idTitle) + " " + cursor.getString(idText))
-            list.add(MyObject(cursor.getString(id), cursor.getString(idTitle), cursor.getString(idText)))
+            list.add(MyObject(cursor.getString(id), cursor.getString(idTitle), cursor.getString(idText), cursor.getString(idDate)))
         }
         notifyDataSetChanged()
 
@@ -95,17 +103,23 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
     fun addTask(taskTitle : String, taskText: String) {
         val values = ContentValues()
 
+        val sdf = SimpleDateFormat("dd/MM/yyyy/", Locale.US)
+        val date = sdf.format(Date())
+
         values.put(TaskContract.TaskEntry.COL_TASK_TITLE, taskTitle)
         values.put(TaskContract.TaskEntry.COL_TASK_TEXT, taskText)
+        values.put(TaskContract.TaskEntry.COL_TASK_DATE, date)
 
         val db = mHelper.readableDatabase
         val id = db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                 null,
                 values,
                 SQLiteDatabase.CONFLICT_REPLACE)
+
+        list.add(MyObject(id.toString(), taskTitle, taskText, date))
+
         db.close()
 
-        list.add(MyObject(id.toString(), taskTitle, taskText))
         notifyItemInserted(list.size)
     }
 
@@ -113,27 +127,10 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
         val test: Activity = context as Activity
 
         test.launchActivity<AddNoteActivity>(42) {
-            putExtra("user", "854")
-            putExtra("user2", "46850")
+           /* putExtra("user", "854")
+            p utExtra("user2", "46850") */
         }
-        /*
-        val title = "test"
-        val task = "Oui bonsoir famille"
-        val db = mHelper.readableDatabase
-        val values = ContentValues()
 
-        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, title)
-        values.put(TaskContract.TaskEntry.COL_TASK_TEXT, task)
-
-        val id = db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                null,
-                values,
-                SQLiteDatabase.CONFLICT_REPLACE)
-        db.close()
-
-        list.add(MyObject(id.toString(), title, task))
-        notifyItemInserted(list.size)
-        */
     }
 
     fun deleteTask(taskId: String) {
