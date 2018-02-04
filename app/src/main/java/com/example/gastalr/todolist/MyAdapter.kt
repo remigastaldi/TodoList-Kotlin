@@ -15,9 +15,10 @@ import android.support.v7.widget.helper.ItemTouchHelper
 
 
 
-class MyAdapter(private var list: MutableList<MyObject>) :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.ActionCompletionContract {
+class MyAdapter :  RecyclerView.Adapter<MyViewHolder>(),  SwipeAndDragHelper.ActionCompletionContract {
 
     private var touchHelper: ItemTouchHelper? = null
+    private var list = mutableListOf<MyObject>()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, itemType: Int): MyViewHolder {
         println("Create\n")
@@ -58,5 +59,9 @@ class MyAdapter(private var list: MutableList<MyObject>) :  RecyclerView.Adapter
 
     fun setTouchHelper(touchHelper: ItemTouchHelper) {
         this.touchHelper = touchHelper
+    }
+
+    fun setList(list : List<MyObject>) {
+        this.list = list as MutableList<MyObject>
     }
 }

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         //puis créer un MyAdapter, lui fournir notre liste de villes.
         //cet adapter servira à remplir notre recyclerview
 
-        val adapter = MyAdapter(cities)
+        val adapter = MyAdapter()
 
 
         val swipeAndDragHelper = SwipeAndDragHelper(adapter)
@@ -49,7 +49,9 @@ class MainActivity : AppCompatActivity() {
         recyclerView!!.adapter = adapter
 
         touchHelper.attachToRecyclerView(recyclerView);
+
         ajouterVilles()
+        adapter.setList(cities)
     }
 
     private fun ajouterVilles() {
