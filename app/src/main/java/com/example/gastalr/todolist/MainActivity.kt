@@ -22,6 +22,7 @@ import android.widget.Toast
 class MainActivity : AppCompatActivity() {
     private var recyclerView: RecyclerView? = null
     private var mHelper: TaskDbHelper = TaskDbHelper(this)
+    private val adapter = MyAdapter(mHelper)
     private val TAG: String = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,6 @@ class MainActivity : AppCompatActivity() {
 
       //  this.deleteDatabase("com.gastalr.todolist.db");
 
-        val adapter = MyAdapter(mHelper)
 
 
         val swipeAndDragHelper = SwipeAndDragHelper(adapter)
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val floatingButton: FloatingActionButton = this.findViewById(R.id.floating_button)
 
         floatingButton.setOnClickListener {
-            adapter.addTask(this)
+            adapter.addTaskButton(this)
         }
 
         val cursor = db.query(TaskContract.TaskEntry.TABLE,
@@ -74,15 +74,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        // Check which request we're responding to
         if (requestCode == 42) {
-            // Make sure the request was successful
             if (resultCode == Activity.RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
+                val action = data.getStringExtra("Action")
+                println("========= " + action)
 
-                // Do something with the contact here (bigger example below)
-                Toast.makeText(this, data.getStringExtra("Result"), Toast.LENGTH_SHORT).show()
+                when (action)
+                {
+                    "ADD" -> {
+                        val taskTitle = data.getStringExtra("TaskTitle")
+                        val taskText = data.getStringExtra("TaskText")
+                        println("========= " + taskTitle)
+                        println("========= " + taskText)
+                        adapter.addTask(taskTitle, taskText)
+                    }
+                }
+                //Toast.makeText(this, data.getStringExtra("Result"), Toast.LENGTH_SHORT).show()
             }
         }
     }

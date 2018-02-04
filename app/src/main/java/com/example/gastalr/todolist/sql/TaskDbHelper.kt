@@ -27,13 +27,4 @@ class TaskDbHelper(context: Context) : SQLiteOpenHelper(context, TaskContract.DB
         db.execSQL("DROP TABLE IF EXISTS " + TaskContract.TaskEntry.TABLE)
         onCreate(db)
     }
-
-    fun deleteTask(taskId: String) {
-
-        val db = this.writableDatabase
-        db.delete(TaskContract.TaskEntry.TABLE,
-                "id=" + taskId, null)
-        db.close()
-    }
-
 }

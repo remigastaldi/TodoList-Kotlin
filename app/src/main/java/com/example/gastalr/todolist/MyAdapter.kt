@@ -83,7 +83,7 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
     }
 
     override fun onViewSwiped(position: Int) {
-        mHelper.deleteTask(list[position]._ID)
+        deleteTask(list[position]._ID)
         list.removeAt(position)
         notifyItemRemoved(position)
     }
@@ -92,8 +92,24 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
         this.touchHelper = touchHelper
     }
 
+    fun addTask(taskTitle : String, taskText: String) {
+        val values = ContentValues()
 
-    fun addTask(context: Context) {
+        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, taskTitle)
+        values.put(TaskContract.TaskEntry.COL_TASK_TEXT, taskText)
+
+        val db = mHelper.readableDatabase
+        val id = db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                null,
+                values,
+                SQLiteDatabase.CONFLICT_REPLACE)
+        db.close()
+
+        list.add(MyObject(id.toString(), taskTitle, taskText))
+        notifyItemInserted(list.size)
+    }
+
+    fun addTaskButton(context: Context) {
         val test: Activity = context as Activity
 
         test.launchActivity<AddNoteActivity>(42) {
@@ -119,4 +135,13 @@ class MyAdapter(private val mHelper : TaskDbHelper) :  RecyclerView.Adapter<MyVi
         notifyItemInserted(list.size)
         */
     }
+
+    fun deleteTask(taskId: String) {
+
+        val db = mHelper.readableDatabase
+        db.delete(TaskContract.TaskEntry.TABLE,
+                "id=" + taskId, null)
+        db.close()
+    }
+
 }
