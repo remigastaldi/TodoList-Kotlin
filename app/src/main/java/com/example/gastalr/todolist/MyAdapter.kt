@@ -56,7 +56,6 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
             when (event.actionMasked)
             {
                 MotionEvent.ACTION_UP -> {
-                    println("=======================================================")
                     updateNotesPositionInDb()
                     false
                 }

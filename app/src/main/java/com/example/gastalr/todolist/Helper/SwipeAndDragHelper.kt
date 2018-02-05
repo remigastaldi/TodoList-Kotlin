@@ -7,6 +7,8 @@ package com.example.gastalr.todolist.Helper
 import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.support.v7.widget.helper.ItemTouchHelper.LEFT
+import android.support.v7.widget.helper.ItemTouchHelper.RIGHT
 
 class SwipeAndDragHelper(private val contract: ActionCompletionContract) : ItemTouchHelper.Callback() {
 
@@ -50,6 +52,15 @@ class SwipeAndDragHelper(private val contract: ActionCompletionContract) : ItemT
 
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
+    }
+
+    override fun convertToAbsoluteDirection(flags: Int, layoutDirection: Int): Int {
+    /*    if (swipeBack) {
+            swipeBack = false
+            return 0
+        }
+      */
+        return super.convertToAbsoluteDirection(flags, layoutDirection)
     }
 
 }

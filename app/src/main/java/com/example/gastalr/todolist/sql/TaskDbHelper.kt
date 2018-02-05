@@ -3,13 +3,9 @@ package com.example.gastalr.todolist.sql
 /**
  * Created by gastal_r on 2/4/18.
  */
-import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.view.View
-import android.widget.TextView
-import com.example.gastalr.todolist.R
 
 
 class TaskDbHelper(context: Context) : SQLiteOpenHelper(context, TaskContract.DB_NAME, null, TaskContract.DB_VERSION) {
