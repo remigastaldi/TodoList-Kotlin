@@ -18,6 +18,7 @@ import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
 import com.example.gastalr.todolist.extensions.launchActivity
 import com.example.gastalr.todolist.sql.TaskContract
 import com.example.gastalr.todolist.sql.TaskDbHelper
+import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,9 +41,9 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
     override fun onBindViewHolder(myViewHolder: MyViewHolder, position: Int) {
         val myObject = list[position]
         myViewHolder.bind(myObject)
+        val activity: Activity = context as Activity
 
         myViewHolder.textView.setOnClickListener{
-            val activity: Activity = context as Activity
 
             activity.launchActivity<AddNoteActivity>(42) {
                 putExtra("PositionInList", position.toString())
@@ -51,25 +52,50 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
             }
         }
 
-        myViewHolder.titleView.setOnTouchListener({ _, event ->
-            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-                touchHelper!!.startDrag(myViewHolder)
+        activity.recyclerView.setOnTouchListener({ _, event ->
+            when (event.actionMasked)
+            {
+                MotionEvent.ACTION_UP -> {
+                    println("=======================================================")
+                    updateNotesPositionInDb()
+                    false
+                }
+
+                else -> {
+                    false
+                }
             }
-            false
         })
 
+        myViewHolder.titleView.setOnTouchListener({ _, event ->
+            when (event.actionMasked)
+            {
+                MotionEvent.ACTION_DOWN -> {
+                    touchHelper!!.startDrag(myViewHolder)
+                    false
+                }
+                else -> {
+                    false
+                }
+            }
+
+/*            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                press = true
+                touchHelper!!.startDrag(myViewHolder)
+             } */
+        })
     }
 
     private fun initList() {
         list.clear()
         val db = mHelper.readableDatabase
         val cursor = db.query(TaskContract.TaskEntry.TABLE,
-                arrayOf(TaskContract.TaskEntry._ID,
+                arrayOf(TaskContract.TaskEntry.ID,
                         TaskContract.TaskEntry.COL_TASK_TITLE,
                         TaskContract.TaskEntry.COL_TASK_TEXT,
-                        TaskContract.TaskEntry.COL_TASK_DATE),null, null, null, null, null)
+                        TaskContract.TaskEntry.COL_TASK_DATE),null, null, null, null, TaskContract.TaskEntry.ID)
         while (cursor.moveToNext()) {
-            val id = cursor.getColumnIndex(TaskContract.TaskEntry._ID)
+            val id = cursor.getColumnIndex(TaskContract.TaskEntry.ID)
             val idTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)
             val idText = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TEXT)
             val idDate = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DATE)
@@ -95,9 +121,10 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
     }
 
     override fun onViewSwiped(position: Int) {
-        deleteTask(list[position]._ID)
+        deleteTask(list[position].ID)
         list.removeAt(position)
         notifyItemRemoved(position)
+        updateNotesPositionInDb()
     }
 
     fun setTouchHelper(touchHelper: ItemTouchHelper) {
@@ -110,6 +137,7 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
         val sdf = SimpleDateFormat("dd/MM/yyyy/", Locale.US)
         val date = sdf.format(Date())
 
+        values.put(TaskContract.TaskEntry.ID, list.size)
         values.put(TaskContract.TaskEntry.COL_TASK_TITLE, taskTitle)
         values.put(TaskContract.TaskEntry.COL_TASK_TEXT, taskText)
         values.put(TaskContract.TaskEntry.COL_TASK_DATE, date)
@@ -121,8 +149,7 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
                 SQLiteDatabase.CONFLICT_REPLACE)
         db.close()
 
-        list.add(MyObject(id.toString(), taskTitle, taskText, date))
-
+        list.add(MyObject(list.size.toString(), taskTitle, taskText, date))
 
         notifyItemInserted(list.size)
     }
@@ -134,7 +161,6 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
            /* putExtra("user", "854")
             p utExtra("user2", "46850") */
         }
-
     }
 
     fun deleteTask(taskId: String) {
@@ -156,17 +182,33 @@ class MyAdapter(private val context: Context, private val mHelper : TaskDbHelper
         val sdf = SimpleDateFormat("dd/MM/yyyy/", Locale.US)
         val date = sdf.format(Date())
 
+        values.put(TaskContract.TaskEntry.ID, taskPosition)
         values.put(TaskContract.TaskEntry.COL_TASK_TITLE, taskTitle)
         values.put(TaskContract.TaskEntry.COL_TASK_TEXT, taskText)
         values.put(TaskContract.TaskEntry.COL_TASK_DATE, date)
 
         val db = mHelper.readableDatabase
         db.update(TaskContract.TaskEntry.TABLE,
-                values, TaskContract.TaskEntry._ID + "=" + target._ID, null)
+                values, TaskContract.TaskEntry.ID + "=" + target.ID, null)
 
         db.close()
 
         notifyItemChanged(taskPosition.toInt())
     }
 
+    fun updateNotesPositionInDb() {
+        val db = mHelper.readableDatabase
+
+        var i = 0
+        while (i < list.size) {
+            val values = ContentValues()
+
+            values.put(TaskContract.TaskEntry.ID, i)
+            db.update(TaskContract.TaskEntry.TABLE,
+                    values, TaskContract.TaskEntry.ID + "=? AND " + TaskContract.TaskEntry.COL_TASK_TITLE + "=?", arrayOf(list[i].ID, list[i].title))
+            i++
+
+        }
+        db.close()
+    }
 }

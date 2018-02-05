@@ -5,6 +5,7 @@ package com.example.gastalr.todolist
  */
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
@@ -15,8 +16,6 @@ import android.util.Log
 import com.example.gastalr.todolist.Helper.SwipeAndDragHelper
 import com.example.gastalr.todolist.sql.TaskContract
 import com.example.gastalr.todolist.sql.TaskDbHelper
-import android.content.Intent
-import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         //recyclerView.setLayoutManager(new GridLayoutManager(this,2));
 
 
-       // this.deleteDatabase("com.gastalr.todolist.db");
+      //  this.deleteDatabase("com.gastalr.todolist.db");
 
 
 
@@ -59,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val cursor = db.query(TaskContract.TaskEntry.TABLE,
-                arrayOf(TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE), null, null, null, null, null)
+                arrayOf(TaskContract.TaskEntry.ID, TaskContract.TaskEntry.COL_TASK_TITLE), null, null, null, null, null)
         while (cursor.moveToNext()) {
             val idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)
             Log.d(TAG, "Task: " + cursor.getString(idx))

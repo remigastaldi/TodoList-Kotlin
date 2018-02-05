@@ -16,7 +16,7 @@ class TaskDbHelper(context: Context) : SQLiteOpenHelper(context, TaskContract.DB
 
     override fun onCreate(db: SQLiteDatabase) {
         val createTable = "CREATE TABLE " + TaskContract.TaskEntry.TABLE + " (" +
-                TaskContract.TaskEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                TaskContract.TaskEntry.ID + " INTEGER, " +
                 TaskContract.TaskEntry.COL_TASK_TITLE + " TEXT NOT NULL, " +
                 TaskContract.TaskEntry.COL_TASK_TEXT + " TEXT NOT NULL, " +
                 TaskContract.TaskEntry.COL_TASK_DATE + " TEXT NOT NULL);"

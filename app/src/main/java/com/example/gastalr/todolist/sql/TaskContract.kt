@@ -15,11 +15,12 @@ class TaskContract {
     class TaskEntry: BaseColumns {
         companion object {
             val TABLE: String = "tasks"
+
+            var ID: String = "id"
             val COL_TASK_TITLE: String = "title"
             val COL_TASK_TEXT: String = "text"
             val COL_TASK_DATE: String = "date"
 
-            var _ID: String = "id"
         }
     }
 }

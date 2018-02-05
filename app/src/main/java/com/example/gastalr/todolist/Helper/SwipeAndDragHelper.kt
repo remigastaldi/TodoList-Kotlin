@@ -26,7 +26,7 @@ class SwipeAndDragHelper(private val contract: ActionCompletionContract) : ItemT
     }
 
     override fun isLongPressDragEnabled(): Boolean {
-        return true
+        return false
     }
 
     override fun onChildDraw(c: Canvas,
