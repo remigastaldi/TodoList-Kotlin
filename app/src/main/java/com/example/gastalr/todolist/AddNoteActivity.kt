@@ -22,17 +22,21 @@ import android.widget.EditText
 
 class AddNoteActivity : AppCompatActivity() {
 
+        var position: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_note)
 
-     /*   val userId = intent.getStringExtra("user")
-        val userId2 = intent.getStringExtra("user2")
-        requireNotNull(userId) { "no user_id provided in Intent extras" }
+        position = intent.getStringExtra("PositionInList")
 
-        Toast.makeText(this, userId, Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, userId2, Toast.LENGTH_SHORT).show()
-*/
+        val title = intent.getStringExtra("TaskTitle")
+        val text = intent.getStringExtra("TaskText")
+
+        val editTextTitle = findViewById<EditText>(R.id.title_edit_text)
+        val editTextText = findViewById<EditText>(R.id.task_edit_text)
+
+        editTextTitle.setText(title)
+        editTextText.setText(text)
     }
 
     override fun onBackPressed() {
@@ -70,9 +74,23 @@ class AddNoteActivity : AppCompatActivity() {
                 val editTextTitle = findViewById<EditText>(R.id.title_edit_text)
                 val editTextText = findViewById<EditText>(R.id.task_edit_text)
 
+                val textTitle = editTextTitle.text.toString()
+                val textText = editTextText.text.toString()
+
+
+                //if (editTextText.text.toString().isEmpty())
+
                 val data = Intent()
 
-                data.putExtra("Action", "ADD")
+                if (position != null)
+                {
+                    data.putExtra("Action", "MODIFY")
+                    data.putExtra("PositionInList", position)
+
+                }
+                else
+                    data.putExtra("Action", "ADD")
+
 
                 data.putExtra("TaskTitle", editTextTitle.text.toString())
                 data.putExtra("TaskText", editTextText.text.toString())

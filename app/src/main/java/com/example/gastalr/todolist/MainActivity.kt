@@ -22,7 +22,7 @@ import android.widget.Toast
 class MainActivity : AppCompatActivity() {
     private var recyclerView: RecyclerView? = null
     private var mHelper: TaskDbHelper = TaskDbHelper(this)
-    private val adapter = MyAdapter(mHelper)
+    private val adapter = MyAdapter(this, mHelper)
     private val TAG: String = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val floatingButton: FloatingActionButton = this.findViewById(R.id.floating_button)
 
         floatingButton.setOnClickListener {
-            adapter.addTaskButton(this)
+            adapter.addTask()
         }
 
         val cursor = db.query(TaskContract.TaskEntry.TABLE,
@@ -69,16 +69,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if (requestCode == 42) {
-            if (resultCode == Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK)
+            return
+
+        when (requestCode)
+        {
+            42 -> {
                 val action = data.getStringExtra("Action")
 
-                when (action)
-                {
+                when (action) {
                     "ADD" -> {
                         val taskTitle = data.getStringExtra("TaskTitle")
                         val taskText = data.getStringExtra("TaskText")
                         adapter.addTask(taskTitle, taskText)
+                    }
+
+                    "MODIFY" -> {
+                        //Toast.makeText(this, data.getStringExtra("PositionInList"), Toast.LENGTH_SHORT).show()
+                        val taskPosition = data.getStringExtra("PositionInList")
+                        val taskTitle = data.getStringExtra("TaskTitle")
+                        val taskText = data.getStringExtra("TaskText")
+
+                        adapter.modifyTask(taskPosition, taskTitle, taskText)
                     }
                 }
             }
