@@ -74,11 +74,17 @@ class AddNoteActivity : AppCompatActivity() {
                 val editTextTitle = findViewById<EditText>(R.id.title_edit_text)
                 val editTextText = findViewById<EditText>(R.id.task_edit_text)
 
-                val textTitle = editTextTitle.text.toString()
-                val textText = editTextText.text.toString()
+                var taskTitle = editTextTitle.text.toString()
+                val taskText = editTextText.text.toString()
 
 
-                //if (editTextText.text.toString().isEmpty())
+                if (taskTitle.isEmpty() && taskText.isEmpty())
+                {
+                    Toast.makeText(this, "Note is empty", Toast.LENGTH_SHORT).show()
+                    return super.onOptionsItemSelected(item)
+                }
+                else if (taskTitle.isEmpty())
+                    taskTitle = taskText
 
                 val data = Intent()
 
@@ -92,8 +98,8 @@ class AddNoteActivity : AppCompatActivity() {
                     data.putExtra("Action", "ADD")
 
 
-                data.putExtra("TaskTitle", editTextTitle.text.toString())
-                data.putExtra("TaskText", editTextText.text.toString())
+                data.putExtra("TaskTitle", taskTitle)
+                data.putExtra("TaskText", taskText)
 
                 setResult(Activity.RESULT_OK, data)
 

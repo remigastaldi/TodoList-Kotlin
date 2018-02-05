@@ -81,11 +81,11 @@ class MainActivity : AppCompatActivity() {
                     "ADD" -> {
                         val taskTitle = data.getStringExtra("TaskTitle")
                         val taskText = data.getStringExtra("TaskText")
+
                         adapter.addTask(taskTitle, taskText)
                     }
 
                     "MODIFY" -> {
-                        //Toast.makeText(this, data.getStringExtra("PositionInList"), Toast.LENGTH_SHORT).show()
                         val taskPosition = data.getStringExtra("PositionInList")
                         val taskTitle = data.getStringExtra("TaskTitle")
                         val taskText = data.getStringExtra("TaskText")
