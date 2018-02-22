@@ -4,11 +4,9 @@ package com.example.gastalr.todolist.Helper
  * Created by gastal_r on 2/3/18.
  */
 
-import android.graphics.Canvas;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.support.v7.widget.helper.ItemTouchHelper.LEFT
-import android.support.v7.widget.helper.ItemTouchHelper.RIGHT
+import android.graphics.Canvas
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 
 class SwipeAndDragHelper(private val contract: ActionCompletionContract) : ItemTouchHelper.Callback() {
 
